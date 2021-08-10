@@ -1,0 +1,133 @@
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>注册页面</title>
+  <link rel="stylesheet" href="/static/layui/css/layui.css">
+<style>
+
+    .page{
+
+        width: 400px;
+
+        position: absolute;
+
+        margin-left: -220px;
+
+        margin-top: -250px;
+
+        top: 50%;
+
+        left: 50%;
+
+        display: block;
+
+        z-index: 2000;
+
+        background: #ffffff;
+
+        padding: 20px;
+
+    }
+</style>
+
+</head>
+
+<body style="background: #f1f1f1;">
+
+    <div class="page"><!-- 注册页面区域的div -->
+
+        <div align="center">
+         <h1>欢迎注册</h1>
+        </div>
+        <!-- 注册表单（layui的表单） -->
+        <form  class="layui-form" method="post">
+
+            <div class="layui-form-item" style="margin-right: 100px;margin-top: 20px;">
+
+                <label class="layui-form-label">用户名：</label>
+
+                <div class="layui-input-block">
+
+                    <input type="text" name="name" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+
+                </div>
+
+             </div>
+
+            <div class="layui-form-item" >
+
+                <label class="layui-form-label">密&nbsp;&nbsp;&nbsp;&nbsp;码：</label>
+
+                <div class="layui-input-inline">
+
+                    <input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+
+                </div>
+
+            </div>
+
+            <div class="layui-form-item" >
+
+                <label class="layui-form-label">密&nbsp;&nbsp;&nbsp;&nbsp;码：</label>
+
+                <div class="layui-input-inline">
+
+                    <input type="password" name="repeatpwd" required lay-verify="required" placeholder="请重复输入密码" autocomplete="off" class="layui-input">
+
+                </div>
+
+            </div>
+
+            <div class="layui-form-item" >
+
+                <label class="layui-form-label">邮&nbsp;&nbsp;&nbsp;&nbsp;箱：</label>
+
+                <div class="layui-input-inline">
+
+                    <input type="text" name="email" required lay-verify="required" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+
+                </div>
+
+            </div>
+
+            <div class="layui-form-item" >
+
+                <label class="layui-form-label">手&nbsp;&nbsp;&nbsp;&nbsp;机：</label>
+
+                <div class="layui-input-inline">
+
+                    <input type="text" name="phone" required lay-verify="required" placeholder="请输入手机号" autocomplete="off" class="layui-input">
+
+                </div>
+
+            </div>
+
+            <br><!-- 返回注册失败信息的显示区域 -->
+                <p align="center">
+                    <font color="red">
+                        <!-- 注册失败显示代码 -->
+                        {{ msg }}
+                    </font>
+                </p>
+            <br>
+            <div class="layui-form-item">
+
+                <div style="text-align: center;">
+
+                    <input type="submit" class="layui-btn"  value="注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册"/>
+
+                </div>
+
+            </div>
+
+            <br/>
+            <!-- 超链接跳转回登录页面-->
+            <p align="center">
+                <a href="{% url 'login' %}">
+                    <font color="blue">已有账号？立即登录</font>
+                </a>
+            </p>
+        </form>
+    </div>
+</body>
+</html>

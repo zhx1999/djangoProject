@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>主页面</title>
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+    <script src="/static/layui/layui.js"></script>
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+</head>
+<body>
+
+    <div class="layui-container">
+        <!--水平导航栏-->
+        <ul class="layui-nav layui-bg-cyan">
+            <li class="layui-nav-item layui-this">
+                <a href="{% url 'main' %}">全国气象展示</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="{% url 'search' %}">气象数据搜索展示</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="{% url 'max_temp_state' %}">全国地区最高温度</a>
+            </li>
+
+            <li class="layui-nav-item">
+                <a href="{% url 'chinaMap' %}">全国天气展示</a>
+            </li>
+
+            <li class="layui-nav-item">
+                <a href="javascript:;">气象xxx</a>
+                <!-- 二级菜单 -->
+                <dl class="layui-nav-child">
+                    <dd>
+                      <a href="">子导航1</a>
+                    </dd>
+                    <dd>
+                      <a href="">子导航2</a>
+                    </dd>
+                    <dd>
+                      <a href="">子导航3</a>
+                    </dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item layui-layout-right">
+                <a href="">登出</a>
+            </li>
+        </ul>
+        <br>
+        <!-- 表格显示所有数据布局 -->
+        <table class="layui-hide" id="tableData"></table>
+    </div>
+<script type="text/javascript">
+    // 注意:导航 依赖 element 模块，否则无法进行功能性操作
+    layui.use(['element','table'], function(){
+            var element = layui.element;
+            var table = layui.table;
+            table.render({
+            elem: '#tableData' //注意：table标签的id属性值
+            ,url:'/loadAllData/' //注意：Django后台数据请求的路由地址
+            ,limit: 5 //默认一页展示多少条数据
+              //设置可选项，每页显多少条数据
+            ,limits: [5, 10, 20]
+             // 每一列写入的数据，后端传来的参数填写进去
+            ,cols: [[
+                {field: 'id', title: 'ID', sort: true, fixed: 'left'},
+                {field: 'state', title: '地区'},
+                {field: 'city', title: '城市'},
+                {field: 'dt', title: '日期'},
+                {field: 'min_temp', title: '最低温度'},
+                {field: 'max_temp', title: '最高温度'},
+                {field: 'weather', title: '天气'},
+                {field: 'wind', title: '风况'},
+            ]]
+              // 开启分页
+            ,page: true
+          });
+    });
+</script>
+
+</body>
+</html>
