@@ -210,20 +210,42 @@ def max_temp_state(request):
 def chinaMap(request):
     city_max_temps = models.WeatherData.objects.values('city').annotate(Max('max_temp'))
     city_max_temps = list(city_max_temps)
-    print(city_max_temps)
+    # print(city_max_temps)
     #地图的数据必须要求字典的key为name和value
     #将原始orm请求到的数据中字典的key进行更换（
     # 原始字典：{'city': '北京', 'max_temp__max': '33'}）
+    path = "dbzq/city_to_pro.json"
+    with open(path, 'r') as f:
+        city_to_pro = json.load(f)
+    re = []
+    re_pros = {}
     t_list_datas = []
     for dic_item in city_max_temps:
         dic = {}
+        tmp_re = {}
         dic['name'] = dic_item['city']
         dic['value'] = dic_item['max_temp__max']
-        t_list_datas.append(dic)
-    return render(request,'chinaMap.html',{'data':t_list_datas})
+        for pro in city_to_pro:
+            if dic_item['city'] in city_to_pro[pro]:
+                if pro in re_pros:
+                    re_pros[pro] = str(max(int(re_pros[pro]), int(dic_item['max_temp__max'])))
+                else:
+                    re_pros[pro] = dic_item['max_temp__max']
+
+    for key in re_pros:
+        dic_tmp = {}
+        if '省' in key:
+            dic_tmp['name'] = key.replace('省', '')
+        elif '市' in key:
+            dic_tmp['name'] = key.replace('市', '')
+        else:
+            dic_tmp['name'] = key
+        dic_tmp['value'] = re_pros[key]
+        re.append(dic_tmp)
+    return render(request, 'chinaMap.html', {'data': re})
+
 
 def city_temp_state(request):
-    print(request.GET)
     city=request.GET.get("city")[0:-1];
 
     min_temp = []
