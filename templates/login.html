@@ -53,7 +53,7 @@
 
                 <div class="layui-input-block">
 
-                    <input type="text" name="name" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+                    <input type="text" name="name" required  lay-verify="required|email" placeholder="请输入用户名" autocomplete="off" class="layui-input">
 
                 </div>
 
@@ -70,6 +70,21 @@
                 </div>
 
             </div>
+
+
+           <div class="layui-form-item">
+
+               <label class="layui-form-label">验证码：</label>
+
+                 <div class="layui-input-inline">
+
+                     <input type="text" required lay-verify="required" name="check_code" id="check_code" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+                     <img id="check_code_img" src="/create_code_img/" onclick="refresh_check_code(this)">
+                 </div>
+
+            </div>
+
+
             <br>
             <!-- 返回登录的状态信息显示 -->
             <p align="center">
@@ -100,7 +115,14 @@
         </form>
 
     </div>
+    <script type="text/javascript">
 
+       function refresh_check_code(ths) {
+          ths.src += '?';
+            {# src后面加问好会自动刷新验证码img的src#}
+         }
+
+    </script>
 </body>
 
 </html>

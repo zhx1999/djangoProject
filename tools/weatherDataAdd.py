@@ -5,11 +5,11 @@ import pymysql
 
 if __name__ == "__main__":
     conn = pymysql.Connect(
-        host='gz-cdb-d56gtnd7.sql.tencentcdb.com',
-        port=58361,
+        host='127.0.0.1',
+        port=3306,
         user='root',
-        password='cmit2021',
-        db='pymysql',
+        password='666',
+        db='dbzq',
         charset='utf8'
     )
     cursor = conn.cursor()
@@ -35,7 +35,7 @@ if __name__ == "__main__":
                 max_temp = city_msg_obj['max_temp']
                 weather = city_msg_obj['cloud']
                 wind = city_msg_obj['wind']
-                sql = "insert into dbzq_weatherdata2(state,city,dt,min_temp,max_temp,weather,wind)values('%s','%s','%s','%s','%s','%s','%s')"%(state,city_name,date,min_temp,max_temp,weather,wind)
+                sql = "insert into dbzq_weatherdata(state,city,dt,min_temp,max_temp,weather,wind)values('%s','%s','%s','%s','%s','%s','%s')"%(state,city_name,date,min_temp,max_temp,weather,wind)
                 cursor.execute(sql)
                 conn.commit()
                 print('正在写入一条数据......')
