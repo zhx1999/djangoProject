@@ -23,6 +23,7 @@ def login(request):
             except:
                 return render(request,'login.html',{'msg':'登录失败，用户名不存在！'})
             if user.password == password:
+                request.session['username'] = username
                 return render(request,'main.html')
             else:
                 return render(request,'login.html',{'msg':'登录失败，密码错误！'})
@@ -35,21 +36,26 @@ def regist(request):
     else:
         #表单数据的捕获
         username = request.POST.get('name')
-        try:
-            user = models.RegistUser.objects.get(username=username)
-            if user is not None:
-                return render(request, 'regist.html', {'msg': '注册失败，用户名已存在！'})
-        except:
-            password = request.POST.get('password')
-            repeatpwd = request.POST.get('repeatpwd')
-            email = request.POST.get('email')
-            phone = request.POST.get('phone')
-            if password != repeatpwd:
-                return render(request,'regist.html',{'msg':'注册失败！两次密码不一致......'})
-            else:
-                user = models.RegistUser(username=username,password=password,email=email,phone=phone)
-                user.save()
-                return render(request,'registRight.html')
+        vcode = request.POST.get('check_code')
+        vcodehide = request.session['check_code']
+        if vcode.lower() == vcodehide.lower():
+            try:
+                user = models.RegistUser.objects.get(username=username)
+                if user is not None:
+                    return render(request, 'regist.html', {'msg': '注册失败，用户名已存在！'})
+            except:
+                password = request.POST.get('password')
+                repeatpwd = request.POST.get('repeatpwd')
+                email = request.POST.get('email')
+                phone = request.POST.get('phone')
+                if password != repeatpwd:
+                    return render(request,'regist.html',{'msg':'注册失败！两次密码不一致......'})
+                else:
+                    user = models.RegistUser(username=username,password=password,email=email,phone=phone)
+                    user.save()
+                    return render(request,'registRight.html')
+        else:
+            return render(request, 'regist.html', {'msg':'注册失败，验证码错误！'})
 
 def create_code_img(request):
     f = BytesIO()  # 在内存中临时存放验证码图片
