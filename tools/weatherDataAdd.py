@@ -35,7 +35,7 @@ if __name__ == "__main__":
                 max_temp = city_msg_obj['max_temp']
                 weather = city_msg_obj['cloud']
                 wind = city_msg_obj['wind']
-                sql = "insert into dbzq_weatherdata(state,city,dt,min_temp,max_temp,weather,wind)values('%s','%s','%s','%s','%s','%s','%s')"%(state,city_name,date,min_temp,max_temp,weather,wind)
+                sql = "insert into dbzq_weatherdata2(state,city,dt,min_temp,max_temp,weather,wind)values('%s','%s','%s','%s','%s','%s','%s')"%(state,city_name,date,min_temp,max_temp,weather,wind)
                 cursor.execute(sql)
                 conn.commit()
                 print('正在写入一条数据......')

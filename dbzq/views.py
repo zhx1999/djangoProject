@@ -110,6 +110,30 @@ def loadSearchCityData(request):
     return JsonResponse(datas)
 
 
+def loadSearchCityStateData(request):
+    search = request.GET.get('query')
+    args = ()
+    if search:
+        args = (
+            Q(state__icontains=search)
+            | Q(city__icontains=search),
+        )
+    state_items = models.WeatherData.objects.filter(*args).values('weather', 'city').annotate(count=Count('weather')).order_by('city')
+    page_count = len(state_items)
+    # 前台传来的页数
+    page_index = request.GET.get('page')
+    # 前台传来的一页显示多少条数据
+    page_limit = request.GET.get('limit')
+    # 分页器进行分配
+    paginator = Paginator(state_items, page_limit)
+    # 前端传来页数的数据
+    data = paginator.page(page_index)
+    # 放在一个列表里
+    all_data_info = [x for x in data]
+    datas = {"code": 0, "msg": "", "count": page_count, "data": all_data_info}
+    return JsonResponse(datas)
+
+
 def loadSearchDtData(request):
     dt_value = request.GET.get('query')
     dt_items = models.WeatherData.objects.filter(dt=dt_value).values()
@@ -142,7 +166,7 @@ def loadSelectData(request):
     return JsonResponse(dic)
 
 
-from django.db.models import Avg, Sum, Max, Min, Count
+from django.db.models import Avg, Sum, Max, Min, Count, Q
 
 
 def max_temp_state(request):
