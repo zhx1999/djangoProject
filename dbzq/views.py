@@ -3,7 +3,8 @@ from django.http import HttpResponse,JsonResponse
 from dbzq import models
 from django.core.paginator import Paginator
 from django.core import serializers
-
+from tools import checkCode
+from io import BytesIO
 
 # Create your views here.
 def login(request):
@@ -12,15 +13,21 @@ def login(request):
     else:
         username = request.POST.get('name')
         password = request.POST.get('password')
-        #条件查询
-        try:
-            user = models.RegistUser.objects.get(username=username)
-        except:
-            return render(request,'login.html',{'msg':'登录失败，用户名不存在！'})
-        if user.password == password:
-            return render(request,'main.html')
+        vcode = request.POST.get('check_code')
+        vcodehide = request.session['check_code']
+
+        if vcode.lower() == vcodehide.lower():
+            # 条件查询
+            try:
+                user = models.RegistUser.objects.get(username=username)
+            except:
+                return render(request,'login.html',{'msg':'登录失败，用户名不存在！'})
+            if user.password == password:
+                return render(request,'main.html')
+            else:
+                return render(request,'login.html',{'msg':'登录失败，密码错误！'})
         else:
-            return render(request,'login.html',{'msg':'登录失败，密码错误！'})
+            return render(request, 'login.html', {'msg':'登陆失败，验证码错误！'})
 
 def regist(request):
     if request.method == 'GET':
@@ -28,16 +35,32 @@ def regist(request):
     else:
         #表单数据的捕获
         username = request.POST.get('name')
-        password = request.POST.get('password')
-        repeatpwd = request.POST.get('repeatpwd')
-        email = request.POST.get('email')
-        phone = request.POST.get('phone')
-        if password != repeatpwd:
-            return render(request,'regist.html',{'msg':'注册失败！两次密码不一致......'})
-        else:
-            user = models.RegistUser(username=username,password=password,email=email,phone=phone)
-            user.save()
-            return render(request,'registRight.html')
+        try:
+            user = models.RegistUser.objects.get(username=username)
+            if user is not None:
+                return render(request, 'regist.html', {'msg': '注册失败，用户名已存在！'})
+        except:
+            password = request.POST.get('password')
+            repeatpwd = request.POST.get('repeatpwd')
+            email = request.POST.get('email')
+            phone = request.POST.get('phone')
+            if password != repeatpwd:
+                return render(request,'regist.html',{'msg':'注册失败！两次密码不一致......'})
+            else:
+                user = models.RegistUser(username=username,password=password,email=email,phone=phone)
+                user.save()
+                return render(request,'registRight.html')
+
+def create_code_img(request):
+    f = BytesIO()  # 在内存中临时存放验证码图片
+
+    img, code = checkCode.create_validate_code() # 生成 图片,验证码
+
+    request.session['check_code'] = code  # 将验证码存在服务器的session中，用于校验
+    img.save(f, 'PNG')  # 生成的图片放置于开辟的内存中
+
+
+    return HttpResponse(f.getvalue())  # 将内存的数据读取出来，并以HttpResponse返回
 
 def mainView(request):
     return render(request,'main.html')

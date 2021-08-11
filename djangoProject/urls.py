@@ -30,4 +30,6 @@ urlpatterns = [
 
     path('max_temp_state/',views.max_temp_state,name='max_temp_state'),
     path('chinaMap/',views.chinaMap,name='chinaMap'),
+
+    path('create_code_img/',views.create_code_img,name='create_code_img')
 ]
