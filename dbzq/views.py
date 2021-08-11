@@ -5,6 +5,7 @@ from django.core.paginator import Paginator
 from django.core import serializers
 from tools import checkCode
 from io import BytesIO
+import json
 
 # Create your views here.
 def login(request):
@@ -194,7 +195,9 @@ def loadSelectData(request):
     }
     return JsonResponse(dic)
 
-from django.db.models import Avg, Sum, Max, Min, Count
+from django.db.models import Avg, Sum, Max, Min, Count, Q
+
+
 def max_temp_state(request):
     name = []
     data = []
