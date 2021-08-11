@@ -8,6 +8,16 @@
     <script src="https://cdn.bootcss.com/echarts/3.0.0/echarts.min.js"></script>
     <script src="/static/js/jquery.min.js"></script>
     <link rel="stylesheet" href="/static/layui/css/layui.css">
+    <script type="text/javascript">
+        var city;
+        function showLocation(data) {
+            city=data.content.address_detail.city;
+        }
+        $.getScript("http://api.map.baidu.com/location/ip?ak=g14ucq44xa2DmhNTkKK7gd0F7Q73Q3PE&callback=showLocation");
+        function SCity(){
+            window.open({% url 'city_temp_state' %}+"?city="+city, "_self")
+        }
+    </script>
 </head>
 <body>
 
@@ -35,7 +45,7 @@
             </li>
 
             <li class="layui-nav-item">
-                <a href="{% url 'city_temp_state' %}">城市天气预报</a>
+                <a onclick="SCity()">城市天气预报</a>
             </li>
 
             <li class="layui-nav-item">
