@@ -23,9 +23,11 @@ urlpatterns = [
     path('loadAllData/',views.loadAllData,name='loadAllData'),
     path('main/',views.mainView,name='main'),
     path('search/',views.search,name='search'),
+    path('searchstate/', views.searchstate, name='searchstate'),
     path('loadSelectData/',views.loadSelectData,name='loadSelectData'),
     path('loadSearchStateData/',views.loadSearchStateData,name='loadSearchStateData'),
     path('loadSearchCityData/',views.loadSearchCityData,name='loadSearchCityData'),
+    path('loadSearchCityStateData/', views.loadSearchCityStateData, name='loadSearchCityStateData'),
     path('loadSearchDtData/',views.loadSearchDtData,name='loadSearchDtData'),
 
     path('max_temp_state/',views.max_temp_state,name='max_temp_state'),
