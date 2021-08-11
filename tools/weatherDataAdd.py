@@ -5,11 +5,11 @@ import pymysql
 
 if __name__ == "__main__":
     conn = pymysql.Connect(
-        host='127.0.0.1',
-        port=3306,
+        host='gz-cdb-d56gtnd7.sql.tencentcdb.com',
+        port=58361,
         user='root',
-        password='666',
-        db='dbzq',
+        password='cmit2021',
+        db='pymysql',
         charset='utf8'
     )
     cursor = conn.cursor()
