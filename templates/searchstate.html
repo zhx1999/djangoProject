@@ -21,9 +21,8 @@
             <li class="layui-nav-item">
                 <a href="{% url 'search' %}">气象数据搜索展示</a>
             </li>
-
             <li class="layui-nav-item">
-                <a href="{% url 'searchstate' %}">七日数据统计</a>
+                <a href="{% url 'search' %}">近7日天气状况统计</a>
             </li>
 
             <li class="layui-nav-item">
@@ -83,20 +82,6 @@
         <button class="layui-btn" id='cityBtn' data-type="reload">搜索</button>
       </div>
     </div>
-    <!-- 第三个搜索 -->
-    <div class="layui-inline">
-      <div class="layui-input-inline" style="width: 180px">
-        <select name="date" class="layui-input" id='dt'>
-          <option value="">请选择日期</option>
-          <!-- 需要动态加载下拉框的选项 -->
-        </select>
-      </div>
-      <div class="layui-input-inline" style="width: 120px">
-        <!-- 注意button标签的id设置 -->
-        <button class="layui-btn" id='dtBtn' data-type="reload">搜索</button>
-      </div>
-    </div>
-
   </div>
         <!-- 表格显示搜索数据 -->
         <table class="layui-hide" lay-type="post" id="tableData"></table>
@@ -110,20 +95,14 @@
         table.render({
         id: 'testReload',
         elem: '#tableData' //注意：table标签的id属性值
-        ,url:'{% url "loadAllData" %}' //注意：Django后台数据请求的路由地址
+        ,url:'{% url "loadSearchCityStateData" %}' //注意：Django后台数据请求的路由地址
         ,limit: 10 //默认一页展示多少条数据
           //设置可选项，每页显多少条数据
-        ,limits: [10, 20, 50]
+        ,limits: [5, 10, 20]
          // 每一列写入的数据，后端传来的参数填写进去
-        ,cols: [[
-            {field: 'id', title: 'ID', sort: true, fixed: 'left'},
-            {field: 'state', title: '地区'},
-            {field: 'city', title: '城市'},
-            {field: 'dt', title: '日期'},
-            {field: 'min_temp', title: '最低温度'},
-            {field: 'max_temp', title: '最高温度'},
-            {field: 'weather', title: '天气'},
-            {field: 'wind', title: '风况'},
+            , cols: [[{field: 'city', title: '城市'},
+                {field: 'weather', title: '天气'},
+                {field: 'count', title: '天數'},
         ]]
           // 开启分页
         ,page: true
@@ -133,9 +112,9 @@
     $('#stateBtn').click(function () {
           var inputVal = $('#state').val()
           table.reload('testReload', {
-          url: '{% url "loadSearchStateData" %}'
+          url: '{% url "loadSearchCityStateData" %}'
           ,limit:10
-          ,limits: [10, 20, 50]
+          ,limits: [5, 10, 20]
           ,where: {
            query : inputVal
           }
@@ -148,24 +127,9 @@
     $('#cityBtn').click(function () {
           var inputVal = $('#city').val()
           table.reload('testReload', {
-          url: '{% url "loadSearchCityData" %}'
+          url: '{% url "loadSearchCityStateData" %}'
           ,limit:10
-          ,limits: [10, 20, 50]
-          ,where: {
-           query : inputVal
-          }
-          ,page: {
-           curr: 1
-          }
-          });
-         });
-
-    $('#dtBtn').click(function () {
-          var inputVal = $('#dt').val()
-          table.reload('testReload', {
-          url: '{% url "loadSearchDtData" %}'
-          ,limit:10
-          ,limits: [10, 20, 50]
+          ,limits: [5, 10, 20]
           ,where: {
            query : inputVal
           }

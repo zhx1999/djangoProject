@@ -219,4 +219,15 @@ def chinaMap(request):
         t_list_datas.append(dic)
     return render(request,'chinaMap.html',{'data':t_list_datas})
 
-
+def city_temp_state(request):
+    city=request.GET.get("city")[0:-1];
+    min_temp = []
+    max_temp = []
+    data = []
+    result = models.WeatherData.objects.filter(city=city).values()
+    for dic in result:
+        min_temp.append(dic['min_temp'])
+        max_temp.append(dic['max_temp'])
+        data.append(dic['dt'])
+    # data[0] = today
+    return render(request, "city_temp_state.html",{"data": data, "city": city, "min_temp": min_temp, "max_temp": max_temp})

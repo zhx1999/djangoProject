@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8">
+    <title>主页面</title>
+    <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
+    <script src="/static/layui/layui.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/3.0.0/echarts.min.js"></script>
+    <script src="/static/js/jquery.min.js"></script>
+    <link rel="stylesheet" href="/static/layui/css/layui.css">
+</head>
+<body>
+
+    <div class="layui-container">
+        <!--水平导航栏-->
+        <ul class="layui-nav layui-bg-cyan">
+            <li class="layui-nav-item layui-this">
+                <a href="{% url 'main' %}">全国气象展示</a>
+            </li>
+
+            <li class="layui-nav-item">
+                <a href="{% url 'search' %}">气象数据搜索展示</a>
+            </li>
+
+            <li class="layui-nav-item">
+                <a href="{% url 'searchstate' %}">七日数据统计</a>
+            </li>
+
+            <li class="layui-nav-item">
+                <a href="{% url 'max_temp_state' %}">全国地区最高温度</a>
+            </li>
+
+            <li class="layui-nav-item">
+                <a href="{% url 'chinaMap' %}">全国天气展示</a>
+            </li>
+
+            <li class="layui-nav-item">
+                <a href="{% url 'city_temp_state' %}">城市天气预报</a>
+            </li>
+
+            <li class="layui-nav-item">
+                <a href="javascript:;">气象xxx</a>
+                <!-- 二级菜单 -->
+                <dl class="layui-nav-child">
+                    <dd>
+                      <a href="">子导航1</a>
+                    </dd>
+                    <dd>
+                      <a href="">子导航2</a>
+                    </dd>
+                    <dd>
+                      <a href="">子导航3</a>
+                    </dd>
+                </dl>
+            </li>
+            <li class="layui-nav-item layui-layout-right">
+                <a href="">登出</a>
+            </li>
+        </ul>
+        <br>
+        <!-- 可视化图例显示 -->
+        <div id="state_max_temp" style="width: 1200px;height:700px;"></div>
+    </div>
+
+
+    <script type="text/javascript">
+    // 注意:导航 依赖 element 模块，否则无法进行功能性操作
+    layui.use('element', function () {
+        var element = layui.element;
+    });
+
+    var myChart = echarts.init(document.getElementById('state_max_temp'));
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: '未来一周气温变化',
+            subtext: '{{ city }}'
+        },
+        tooltip: {
+            trigger: 'axis'
+        },
+        legend: {
+            data: ['最高气温', '最低气温']
+        },
+        toolbox: {
+            show: true,
+            feature: {
+                dataZoom: {
+                    yAxisIndex: 'none'
+                },
+                dataView: {readOnly: false},
+                magicType: {type: ['line', 'bar']},
+                restore: {},
+                saveAsImage: {}
+            }
+        },
+        xAxis: {
+            type: 'category',
+            boundaryGap: false,
+            data: {{ data|safe }}
+        },
+        yAxis: {
+            type: 'value',
+            axisLabel: {
+                formatter: '{value} °C'
+            }
+        },
+        series: [
+            {
+                name: '最高气温',
+                type: 'line',
+                data: {{ max_temp|safe }},
+                markPoint: {
+                    data: [
+                        {type: 'max', name: '最大值'},
+                        {type: 'min', name: '最小值'}
+                    ]
+                },
+                markLine: {
+                    data: [
+                        {type: 'average', name: '平均值'}
+                    ]
+                }
+            },
+            {
+                name: '最低气温',
+                type: 'line',
+                data: {{ min_temp|safe }},
+                markPoint: {
+                    data: [
+                        {name: '周最低', value: -2, xAxis: 1, yAxis: -1.5}
+                    ]
+                },
+                markLine: {
+                    data: [
+                        {type: 'average', name: '平均值'},
+                        [{
+                            symbol: 'none',
+                            x: '90%',
+                            yAxis: 'max'
+                        }, {
+                            symbol: 'circle',
+                            label: {
+                                position: 'start',
+                                formatter: '最大值'
+                            },
+                            type: 'max',
+                            name: '最高点'
+                        }]
+                    ]
+                }
+            }
+        ]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
+</script>
+
+</body>
+</html>
+

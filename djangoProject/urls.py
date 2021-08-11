@@ -18,7 +18,7 @@ from django.urls import path
 from dbzq import views
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('login/',views.login,name='login'),
+    path('',views.login,name='login'),
     path('regist/',views.regist,name='regist'),
     path('loadAllData/',views.loadAllData,name='loadAllData'),
     path('main/',views.mainView,name='main'),
@@ -29,7 +29,7 @@ urlpatterns = [
     path('loadSearchCityData/',views.loadSearchCityData,name='loadSearchCityData'),
     path('loadSearchCityStateData/', views.loadSearchCityStateData, name='loadSearchCityStateData'),
     path('loadSearchDtData/',views.loadSearchDtData,name='loadSearchDtData'),
-
+    path('city_temp_state/',views.city_temp_state,name='city_temp_state'),
     path('max_temp_state/',views.max_temp_state,name='max_temp_state'),
     path('chinaMap/',views.chinaMap,name='chinaMap'),
 
