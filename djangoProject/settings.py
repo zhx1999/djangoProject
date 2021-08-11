@@ -79,13 +79,14 @@ WSGI_APPLICATION = 'djangoProject.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME':'dbzq',# 要连接的数据库，连接前需要创建好
+        'NAME':'pymysql',# 要连接的数据库
         'USER':'root',# 连接数据库的用户名
-        'PASSWORD':'666',# 连接数据库的密码
-        'HOST':'127.0.0.1',# 连接主机，默认本级
-        'PORT':3306 #  端口 默认3306
+        'PASSWORD':'cmit2021',# 连接数据库的密码
+        'HOST':'gz-cdb-d56gtnd7.sql.tencentcdb.com',# 连接主机
+        'PORT':58361 #  端口
     }
 }
+
 
 
 # Password validation
