@@ -104,17 +104,14 @@
 
              <div class="layui-form-item">
 
-                 <div class="col-xs-7">
+               <label class="layui-form-label">验证码：</label>
 
-                     <input type="text" class="form-control" required lay-verify="required" autocomplete="off" name="check_code" id="check_code" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+                 <div class="layui-input-inline">
 
+                     <input type="text" required lay-verify="required" name="check_code" id="check_code" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+                     <img id="check_code_img" src="/create_code_img/" onclick="refresh_check_code(this)">
                  </div>
 
-                 <div class="col-xs-5">
-
-                     <img id="check_code_img" src="/create_code_img/" onclick="refresh_check_code(this)">
-
-                 </div><br>
             </div>
 
             <br><!-- 返回注册失败信息的显示区域 -->
@@ -153,6 +150,5 @@
          }
 
     </script>
-
 </body>
 </html>
