@@ -60,9 +60,9 @@
             table.render({
             elem: '#tableData' //注意：table标签的id属性值
             ,url:'/loadAllData/' //注意：Django后台数据请求的路由地址
-            ,limit: 5 //默认一页展示多少条数据
+            ,limit: 10 //默认一页展示多少条数据
               //设置可选项，每页显多少条数据
-            ,limits: [5, 10, 20]
+            ,limits: [10, 20, 50]
              // 每一列写入的数据，后端传来的参数填写进去
             ,cols: [[
                 {field: 'id', title: 'ID', sort: true, fixed: 'left'},

@@ -220,7 +220,9 @@ def chinaMap(request):
     return render(request,'chinaMap.html',{'data':t_list_datas})
 
 def city_temp_state(request):
+    print(request.GET)
     city=request.GET.get("city")[0:-1];
+
     min_temp = []
     max_temp = []
     data = []
