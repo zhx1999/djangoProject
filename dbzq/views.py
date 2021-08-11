@@ -68,6 +68,11 @@ def search(request):
         return render(request, 'search.html')
 
 
+def searchstate(request):
+    if request.method == 'GET':
+        return render(request, 'searchstate.html')
+
+
 # xxxxxxxxxxxxxxxxx
 def loadSearchStateData(request):
     state_value = request.GET.get('query')
