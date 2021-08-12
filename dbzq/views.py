@@ -317,3 +317,8 @@ def customize_random_str(i: int):
     salt = random.SystemRandom()
     random_str = ''.join(salt.sample(digits, k=i))
     return random_str
+
+def logout(request):
+    request.session.flush()
+    # 2. 重定向到 登录界面
+    return redirect('login')
