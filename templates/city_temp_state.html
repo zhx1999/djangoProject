@@ -5,7 +5,7 @@
     <title>主页面</title>
     <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
     <script src="/static/layui/layui.js"></script>
-    <script src="https://cdn.bootcss.com/echarts/3.0.0/echarts.min.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/5.0.0/echarts.min.js"></script>
     <script src="/static/js/jquery.min.js"></script>
     <link rel="stylesheet" href="/static/layui/css/layui.css">
     <script type="text/javascript">
@@ -165,7 +165,8 @@
                 data: {{ min_temp|safe }},
                 markPoint: {
                     data: [
-                        {name: '周最低', value: -2, xAxis: 1, yAxis: -1.5}
+                        {type: 'max', name:'最大值'},
+                        {type: 'min', name:'最小值'}
                     ]
                 },
                 markLine: {
