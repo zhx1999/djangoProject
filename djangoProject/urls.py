@@ -37,6 +37,6 @@ urlpatterns = [
 
     path('create_code_img/',views.create_code_img,name='create_code_img'),
     path('logout/',views.logout,name='logout'),
-    # path('modPassword/',views.modPwd,name='modPassword')
+    path('modPassword/',views.modPwd,name='modPassword')
 
 ]

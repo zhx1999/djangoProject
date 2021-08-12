@@ -322,3 +322,5 @@ def logout(request):
     request.session.flush()
     # 2. 重定向到 登录界面
     return redirect('login')
+
+
