@@ -287,7 +287,7 @@ def password_reset(request):
                     send_mail('密码重置成功',
                               '您的新密码为: %s' % password, 'heyu2021best@163.com',
                               [email], fail_silently=True)
-                    return render(request, 'login.html', {'msg': '密码重置成功！'})
+                    return redirect(request, 'login.html', {'msg': '密码重置成功！'})
                 return render(request, 'password_reset.html', {'msg': '验证码错误, 请检查后重试！'})
             return render(request, 'password_reset.html', {'msg': '邮箱不存在, 请检查后重试！'})
         except:
