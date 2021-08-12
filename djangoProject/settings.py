@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-^&o=)-a$dk-4nfk9^e#7qifi_qd*(^1b)ims^%hy-gu&m#%c!%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -135,3 +135,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_SSL = True  # TSL跟SSL只能用一个
+EMAIL_HOST = 'smtp.163.com'  # 邮箱SMTP服务器(邮箱需要开通SMTP服务)
+EMAIL_PORT = 994  # 邮箱SMTP服务端口
+EMAIL_HOST_USER = 'heyu2021best@163.com' # 我的邮箱帐号
+EMAIL_HOST_PASSWORD = 'JMWHKIXHLCBEUZHU'
+EMAIL_SUBJECT_PREFIX = '密码重置'  # 为邮件标题的前缀,默认是'[django]'
+DEFAULT_FROM_EMAIL = SERVER_EMAIL = EMAIL_HOST_USER  # 设置发件人
+
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake'
+    }
+}

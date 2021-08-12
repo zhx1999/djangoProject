@@ -10,16 +10,19 @@
     <link rel="stylesheet" href="/static/layui/css/layui.css">
     <script type="text/javascript">
         var city = '北京市';
+
         function showLocation(data) {
             city=data.content.address_detail.city;
         }
+
         $.getScript("http://api.map.baidu.com/location/ip?ak=g14ucq44xa2DmhNTkKK7gd0F7Q73Q3PE&callback=showLocation");
+
         function SCity(){
             window.open({% url 'city_temp_state' %}+"?city="+city, "_self")
         }
     </script>
 </head>
-<body>
+<body onload="loadSelect()">
 
     <div class="layui-container">
         <!--水平导航栏-->
@@ -54,11 +57,27 @@
         </ul>
         <br>
         <!-- 可视化图例显示 -->
+    <div class="layui-inline">
+        <div class="layui-input-inline" style="width: 180px">
+            <select name="city" class="layui-input" id='city'>
+                <option value="">请选择城市</option>
+                <!-- 需要动态加载下拉框的选项 -->
+            </select>
+        </div>
+        <div class="layui-input-inline" style="width: 120px">
+            <!-- 注意button标签的id设置 -->
+            <button class="layui-btn" id='cityBtn' data-type="reload">搜索</button>
+        </div>
+    </div>
         <div id="state_max_temp" style="width: 1200px;height:700px;"></div>
     </div>
 
 
     <script type="text/javascript">
+        $('#cityBtn').click(function () {
+            var inputVal = $('#city').val()
+            window.open({% url 'city_temp_state' %}+"?city=" + inputVal+"市", "_self")
+        });
     // 注意:导航 依赖 element 模块，否则无法进行功能性操作
     layui.use('element', function () {
         var element = layui.element;
@@ -150,6 +169,18 @@
 
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
+    function loadSelect() {
+        $.ajax({
+            url: "{% url 'loadSelectData' %}",
+            type: "GET",
+            success: function (data) {
+                var city_list = data['city_datas'];
+                for (i in city_list) {
+                    $("#city").append("<option value='" + city_list[i]['city'] + "'>" + city_list[i]['city'] + "</option>");
+                }
+            }
+        })
+    }
 </script>
 
 </body>
