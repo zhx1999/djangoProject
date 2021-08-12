@@ -1,5 +1,9 @@
-from django.shortcuts import render,redirect
-from django.http import HttpResponse,JsonResponse
+from linecache import cache
+from random import random
+
+from django.core.mail import send_mail
+from django.shortcuts import render, redirect
+from django.http import HttpResponse, JsonResponse
 from dbzq import models
 from django.core.paginator import Paginator
 from django.core import serializers
@@ -7,10 +11,11 @@ from tools import checkCode
 from io import BytesIO
 import json
 
+
 # Create your views here.
 def login(request):
     if request.method == 'GET':
-        return render(request,'login.html')
+        return render(request, 'login.html')
     else:
         username = request.POST.get('name')
         password = request.POST.get('password')
@@ -22,20 +27,21 @@ def login(request):
             try:
                 user = models.RegistUser.objects.get(username=username)
             except:
-                return render(request,'login.html',{'msg':'登录失败，用户名不存在！'})
+                return render(request, 'login.html', {'msg': '登录失败，用户名不存在！'})
             if user.password == password:
                 request.session['username'] = username
-                return render(request,'main.html')
+                return render(request, 'main.html')
             else:
-                return render(request,'login.html',{'msg':'登录失败，密码错误！'})
+                return render(request, 'login.html', {'msg': '登录失败，密码错误！'})
         else:
-            return render(request, 'login.html', {'msg':'登陆失败，验证码错误！'})
+            return render(request, 'login.html', {'msg': '登陆失败，验证码错误！'})
+
 
 def regist(request):
     if request.method == 'GET':
-        return render(request,'regist.html')
+        return render(request, 'regist.html')
     else:
-        #表单数据的捕获
+        # 表单数据的捕获
         username = request.POST.get('name')
         vcode = request.POST.get('check_code')
         vcodehide = request.session['check_code']
@@ -50,24 +56,25 @@ def regist(request):
                 email = request.POST.get('email')
                 phone = request.POST.get('phone')
                 if password != repeatpwd:
-                    return render(request,'regist.html',{'msg':'注册失败！两次密码不一致......'})
+                    return render(request, 'regist.html', {'msg': '注册失败！两次密码不一致......'})
                 else:
-                    user = models.RegistUser(username=username,password=password,email=email,phone=phone)
+                    user = models.RegistUser(username=username, password=password, email=email, phone=phone)
                     user.save()
-                    return render(request,'registRight.html')
+                    return render(request, 'registRight.html')
         else:
-            return render(request, 'regist.html', {'msg':'注册失败，验证码错误！'})
+            return render(request, 'regist.html', {'msg': '注册失败，验证码错误！'})
+
 
 def create_code_img(request):
     f = BytesIO()  # 在内存中临时存放验证码图片
 
-    img, code = checkCode.create_validate_code() # 生成 图片,验证码
+    img, code = checkCode.create_validate_code()  # 生成 图片,验证码
 
     request.session['check_code'] = code  # 将验证码存在服务器的session中，用于校验
     img.save(f, 'PNG')  # 生成的图片放置于开辟的内存中
 
-
     return HttpResponse(f.getvalue())  # 将内存的数据读取出来，并以HttpResponse返回
+
 
 def mainView(request):
     return render(request, 'main.html')
@@ -90,9 +97,10 @@ def loadAllData(request):
     datas = {"code": 0, "msg": "", "count": page_count, "data": all_data_info}
     return JsonResponse(datas)
 
+
 def search(request):
     if request.method == 'GET':
-        return render(request,'search.html')
+        return render(request, 'search.html')
 
 
 def searchstate(request):
@@ -100,7 +108,7 @@ def searchstate(request):
         return render(request, 'searchstate.html')
 
 
-#xxxxxxxxxxxxxxxxx
+# xxxxxxxxxxxxxxxxx
 def loadSearchStateData(request):
     state_value = request.GET.get('query')
     state_items = models.WeatherData.objects.filter(state=state_value).values()
@@ -117,6 +125,7 @@ def loadSearchStateData(request):
     all_data_info = [x for x in data]
     datas = {"code": 0, "msg": "", "count": page_count, "data": all_data_info}
     return JsonResponse(datas)
+
 
 def loadSearchCityData(request):
     city_value = request.GET.get('query')
@@ -179,21 +188,19 @@ def loadSearchDtData(request):
     return JsonResponse(datas)
 
 
-
-
-
 def loadSelectData(request):
     state_datas = models.WeatherData.objects.all().values('state').distinct()
     city_datas = models.WeatherData.objects.all().values('city').distinct()
     dt_datas = models.WeatherData.objects.all().values('dt').distinct()
 
-    #注意：QuerySet类型无法直接序列化，需要将其转成列表
+    # 注意：QuerySet类型无法直接序列化，需要将其转成列表
     dic = {
-        'state_datas':list(state_datas),
-        'city_datas':list(city_datas),
-        'dt_datas':list(dt_datas),
+        'state_datas': list(state_datas),
+        'city_datas': list(city_datas),
+        'dt_datas': list(dt_datas),
     }
     return JsonResponse(dic)
+
 
 from django.db.models import Avg, Sum, Max, Min, Count, Q
 
@@ -207,12 +214,13 @@ def max_temp_state(request):
         data.append(dic['max_temp__max'])
     return render(request, "max_temp_state.html", {"name": name, "data": data})
 
+
 def chinaMap(request):
     city_max_temps = models.WeatherData.objects.values('city').annotate(Max('max_temp'))
     city_max_temps = list(city_max_temps)
     # print(city_max_temps)
-    #地图的数据必须要求字典的key为name和value
-    #将原始orm请求到的数据中字典的key进行更换（
+    # 地图的数据必须要求字典的key为name和value
+    # 将原始orm请求到的数据中字典的key进行更换（
     # 原始字典：{'city': '北京', 'max_temp__max': '33'}）
     path = "dbzq/city_to_pro.json"
     with open(path, 'r') as f:
@@ -246,7 +254,7 @@ def chinaMap(request):
 
 
 def city_temp_state(request):
-    city=request.GET.get("city")[0:-1];
+    city = request.GET.get("city")[0:-1];
 
     min_temp = []
     max_temp = []
@@ -257,4 +265,49 @@ def city_temp_state(request):
         max_temp.append(dic['max_temp'])
         data.append(dic['dt'])
     # data[0] = today
-    return render(request, "city_temp_state.html",{"data": data, "city": city, "min_temp": min_temp, "max_temp": max_temp})
+    return render(request, "city_temp_state.html",
+                  {"data": data, "city": city, "min_temp": min_temp, "max_temp": max_temp})
+
+
+def password_reset(request):
+    if request.method == 'POST':
+        try:
+            code = request.POST.get('code')
+            email = request.POST.get('email')  # 获取前端邮箱
+            password = request.POST.get('password')
+            user = models.RegistUser.objects.filter(email=email).first()
+            if user:
+                cache_code = cache.get(email)
+                if not code:
+                    return JsonResponse({'code': 400, 'msg': '验证码已失效'})
+                if code == cache_code:
+                    user.password = password
+                    user.save()
+                    send_mail('密码重置成功',
+                              '您的新密码为: %s' % password, 'heyu2021best@163.com',
+                              [email], fail_silently=True)
+                    return render(request, 'login.html', {'msg': '密码重置成功！'})
+                return render(request, 'password_reset.html', {'msg': '验证码错误, 请检查后重试！'})
+            return render(request, 'password_reset.html', {'msg': '邮箱不存在, 请检查后重试！'})
+        except:
+            return render(request, 'password_reset.html', {'msg': '网络有误！'})
+    else:
+        return render(request, 'password_reset.html')
+
+    def get_verify_code(request):
+        email = request.POST.get('email')
+        if email:
+            code = customize_random_str(4)
+            send_mail('密码重置',
+                      '您的验证码为: %s' % code, 'heyu2021best@163.com',
+                      [email], fail_silently=True)
+            cache.set(email, code, timeout=300)
+            return JsonResponse({'status': 'success', 'time_remain': 60})  # 'result': result})
+        return JsonResponse({'code': 400, 'msg': "邮箱错误"})
+
+
+def customize_random_str(i: int):
+    digits = 'qwertyuiopasdfghjklzxcvbnm0123456789'
+    salt = random.SystemRandom()
+    random_str = ''.join(salt.sample(digits, k=i))
+    return random_str

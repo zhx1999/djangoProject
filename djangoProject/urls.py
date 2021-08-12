@@ -20,6 +20,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('',views.login,name='login'),
     path('regist/',views.regist,name='regist'),
+    path('password_reset/', views.password_reset, name='password_reset'),
+    path('get_verify_code/', views.get_verify_code, name='get_verify_code'),
     path('loadAllData/',views.loadAllData,name='loadAllData'),
     path('main/',views.mainView,name='main'),
     path('search/',views.search,name='search'),
