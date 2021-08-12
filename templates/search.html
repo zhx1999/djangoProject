@@ -48,10 +48,29 @@
                 <a onclick="SCity()">城市天气预报</a>
             </li>
 
-            <li class="layui-nav-item layui-layout-right">
-                <a href="{% url 'login' %}">登出</a>
-            </li>
         </ul>
+        <ul class="layui-nav layui-bg-cyan layui-layout-right">
+
+        {% if request.session.username %}
+
+            <li class="layui-nav-item" lay-unselect lay-bar="disabled">
+                欢迎,{{ request.session.username }}
+            </li>
+
+            <li class="layui-nav-item">
+                <a href="/modPassword">修改密码</a>
+            </li>
+
+            <li class="layui-nav-item">
+                <a href="/logout">登出</a>
+            </li>
+
+        {% else %}
+            <li class="layui-nav-item">
+                <a href="/">登录</a>
+            </li>
+        {% endif %}
+    </ul>
         <br>
         <!-- 搜索框显示：行内表单 -->
         <div class="layui-form-item">
