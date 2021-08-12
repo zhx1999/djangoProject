@@ -26,28 +26,33 @@
         <!--水平导航栏-->
         <ul class="layui-nav layui-bg-cyan">
             <li class="layui-nav-item layui-this">
-                <a href="{% url 'main' %}">全国气象展示</a>
+                <a href="{% url 'main' %}">全国气象</a>
             </li>
 
             <li class="layui-nav-item">
-                <a href="{% url 'search' %}">气象数据搜索展示</a>
+                <a href="{% url 'search' %}">气象数据搜索</a>
             </li>
 
             <li class="layui-nav-item">
-                <a href="{% url 'searchstate' %}">七日数据统计</a>
+                <a href="{% url 'searchstate' %}">七日数据</a>
             </li>
 
             <li class="layui-nav-item">
-                <a href="{% url 'max_temp_state' %}">全国地区最高温度</a>
+                <a href="{% url 'max_temp_state' %}">地区最高温度</a>
             </li>
 
             <li class="layui-nav-item">
-                <a href="{% url 'chinaMap' %}">全国天气展示</a>
+                <a href="{% url 'chinaMap' %}">全国天气</a>
             </li>
 
-            <li class="layui-nav-item layui-layout-right">
-                <a href="{% url 'login' %}">登出</a>
+            <li class="layui-nav-item">
+                <a onclick="SCity()">天气预报</a>
             </li>
+
+            <li class="layui-nav-item">
+                <a href="{% url 'max_ten_city' %}">城市最高温度</a>
+            </li>
+
         </ul>
         <ul class="layui-nav layui-bg-cyan layui-layout-right">
 

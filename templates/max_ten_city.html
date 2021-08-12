@@ -6,9 +6,10 @@
     <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
     <script src="/static/layui/layui.js"></script>
     <script src="/static/js/jquery.min.js"></script>
+    <script src="https://cdn.bootcss.com/echarts/3.0.0/echarts.min.js"></script>
     <link rel="stylesheet" href="/static/layui/css/layui.css">
     <script type="text/javascript">
-        var city;
+        var city = '北京市';
         function showLocation(data) {
             city=data.content.address_detail.city;
         }
@@ -26,18 +27,21 @@
             <li class="layui-nav-item layui-this">
                 <a href="{% url 'main' %}">全国气象</a>
             </li>
+
             <li class="layui-nav-item">
                 <a href="{% url 'search' %}">气象数据搜索</a>
             </li>
+
             <li class="layui-nav-item">
                 <a href="{% url 'searchstate' %}">七日数据</a>
             </li>
+
             <li class="layui-nav-item">
                 <a href="{% url 'max_temp_state' %}">地区最高温度</a>
             </li>
 
             <li class="layui-nav-item">
-                <a href="{% url 'chinaMap' %}">全国天气</a>
+                <a href="{% url 'chinaMap' %}">全国天气展示</a>
             </li>
 
             <li class="layui-nav-item">
@@ -47,9 +51,8 @@
             <li class="layui-nav-item">
                 <a href="{% url 'max_ten_city' %}">城市最高温度</a>
             </li>
-
         </ul>
-    <ul class="layui-nav layui-bg-cyan layui-layout-right">
+        <ul class="layui-nav layui-bg-cyan layui-layout-right">
 
         {% if request.session.username %}
 
@@ -72,36 +75,48 @@
         {% endif %}
     </ul>
         <br>
-        <!-- 表格显示所有数据布局 -->
-        <table class="layui-hide" id="tableData"></table>
+        <!-- 可视化图例显示 -->
+        <div id="state_max_temp" style="width: 1200px;height:700px;"></div>
     </div>
 <script type="text/javascript">
     // 注意:导航 依赖 element 模块，否则无法进行功能性操作
-    layui.use(['element','table'], function(){
+    layui.use('element', function(){
             var element = layui.element;
-            var table = layui.table;
-            table.render({
-            elem: '#tableData' //注意：table标签的id属性值
-            ,url:'/loadAllData/' //注意：Django后台数据请求的路由地址
-            ,limit: 10 //默认一页展示多少条数据
-              //设置可选项，每页显多少条数据
-            ,limits: [10, 20, 50]
-             // 每一列写入的数据，后端传来的参数填写进去
-            ,cols: [[
-                {field: 'id', title: 'ID', sort: true, fixed: 'left'},
-                {field: 'state', title: '地区'},
-                {field: 'city', title: '城市'},
-                {field: 'dt', title: '日期'},
-                {field: 'min_temp', title: '最低温度'},
-                {field: 'max_temp', title: '最高温度'},
-                {field: 'weather', title: '天气'},
-                {field: 'wind', title: '风况'},
-            ]]
-              // 开启分页
-            ,page: true
-          });
     });
+
+    var myChart = echarts.init(document.getElementById('state_max_temp'));
+
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: '全国十个最高温度的城市'
+        },
+        tooltip: {},
+        legend: {
+            //data: ['最高温度']
+        },
+        xAxis: {
+            name: '城市',
+            data: {{ city|safe }}
+        },
+        yAxis: {
+            name:'温度',
+            nameGap: 10,
+            textStyle:{
+                fontSize: 20
+            }
+        },
+        series: [{
+            name: '最高温度',
+            type : 'bar',
+            data:{{ data|safe }}
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart.setOption(option);
 </script>
 
 </body>
 </html>
+

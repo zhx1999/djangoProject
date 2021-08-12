@@ -211,11 +211,32 @@ from django.db.models import Avg, Sum, Max, Min, Count, Q
 def max_temp_state(request):
     name = []
     data = []
+    name_min = []
+    data_min = []
     state_max_temps = models.WeatherData.objects.values('state').annotate(Max('max_temp'))
+    state_min_temps = models.WeatherData.objects.values('state').annotate(Min('min_temp'))
     for dic in state_max_temps:
         name.append(dic['state'])
         data.append(dic['max_temp__max'])
-    return render(request, "max_temp_state.html", {"name": name, "data": data})
+
+    for dic in state_min_temps:
+        name_min.append(dic['state'])
+        data_min.append(dic['min_temp__min'])
+    # return render(request, "max_temp_state.html", {"name": name, "data": data})
+    return render(request, "max_temp_state.html", {"name": name, "data": data,
+                                                   "name_min": name_min, "data_min": data_min})
+
+def max_ten_city(request):
+    city = []
+    data = []
+    city_max_temps = models.WeatherData.objects.values('city').annotate(Max('max_temp')).order_by('-max_temp')
+    i = 0
+    for dic in city_max_temps:
+        city.append(dic['city'])
+        data.append(dic['max_temp__max'])
+        i = i + 1
+        if i > 9: break
+    return render(request, "max_ten_city.html", {"city": city, "data": data})
 
 
 def chinaMap(request):
@@ -318,16 +339,18 @@ def customize_random_str(i: int):
     random_str = ''.join(salt.sample(digits, k=i))
     return random_str
 
+
 def logout(request):
     request.session.flush()
     # 2. 重定向到 登录界面
     return redirect('login')
 
+
 def modPwd(request):
     if request.method == 'GET':
-        return render(request,'modPassword.html')
+        return render(request, 'modPassword.html')
     else:
-        #表单数据的捕获
+        # 表单数据的捕获
         username = request.POST.get('name')
         try:
             user = models.RegistUser.objects.get(username=username)
@@ -335,15 +358,16 @@ def modPwd(request):
             newpassword = request.POST.get('newpassword')
             newrepeatpwd = request.POST.get('newrepeatpwd')
 
-            if(newpassword != newrepeatpwd):
-                return render(request, 'modPassword.html', {'msg':'两次密码不一致，请重新输入'})
+            if (newpassword != newrepeatpwd):
+                return render(request, 'modPassword.html', {'msg': '两次密码不一致，请重新输入'})
             elif user.password == password:
-                user = models.RegistUser(id=user.id, username=username, password=newpassword, email=user.email, phone=user.phone)
+                user = models.RegistUser(id=user.id, username=username, password=newpassword, email=user.email,
+                                         phone=user.phone)
                 user.save()
-                return render(request, 'modPassword.html', {'msg':'修改成功'})
+                return render(request, 'modPassword.html', {'msg': '修改成功'})
             else:
                 return render(request, 'modPassword.html', {'msg': '原密码错误，请确认后重新输入'})
 
 
         except:
-                return render(request, 'modPassword.html', {'msg':'用户不存在'})
+            return render(request, 'modPassword.html', {'msg': '用户不存在'})
