@@ -44,24 +44,27 @@
                 <a href="{% url 'chinaMap' %}">全国天气展示</a>
             </li>
 
-            <li class="layui-nav-item">
-                <a href="javascript:;">气象xxx</a>
-                <!-- 二级菜单 -->
-                <dl class="layui-nav-child">
-                    <dd>
-                      <a href="">子导航1</a>
-                    </dd>
-                    <dd>
-                      <a href="">子导航2</a>
-                    </dd>
-                    <dd>
-                      <a href="">子导航3</a>
-                    </dd>
-                </dl>
-            </li>
-            <li class="layui-nav-item layui-layout-right">
-                <a href="">登出</a>
-            </li>
+
+            {% if request.session.username %}
+                <li class="layui-nav-item" lay-unselect lay-bar="disabled">
+                      欢迎,{{ request.session.username }}
+                </li>
+
+                <li class="layui-nav-item">
+                    <a href="/modPassword">修改密码</a>
+                </li>
+
+                <li class="layui-nav-item layui-layout-right">
+                    <a href="/logout">登出</a>
+                </li>
+
+            {% else %}
+                <li class="layui-nav-item layui-layout-right">
+                    <a href="/"> 登录</a>
+                </li>
+            {% endif %}
+
+
         </ul>
         <br>
         <!-- 表格显示所有数据布局 -->
