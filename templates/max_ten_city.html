@@ -115,6 +115,41 @@
 
     // 使用刚指定的配置项和数据显示图表。
     myChart.setOption(option);
+
+    var myChart2 = echarts.init(document.getElementById('state_min_temp'));
+
+    // 指定图表的配置项和数据
+    var option = {
+        title: {
+            text: '全国十个温度最低的城市'
+        },
+        tooltip: {},
+        legend: {
+            //data: ['最高温度']
+        },
+        xAxis: {
+            name: '城市',
+            data: {{ city_min|safe }}
+        },
+        yAxis: {
+            name:'温度',
+            nameGap: 10,
+            textStyle:{
+                fontSize: 20
+            }
+        },
+        series: [{
+            name: '最低温度',
+            type : 'bar',
+            data:{{ data_min|safe }},
+            itemStyle:{
+                normal: {color: "#7EC0EE"}
+            }
+        }]
+    };
+
+    // 使用刚指定的配置项和数据显示图表。
+    myChart2.setOption(option);
 </script>
 
 </body>

@@ -227,16 +227,28 @@ def max_temp_state(request):
                                                    "name_min": name_min, "data_min": data_min})
 
 def max_ten_city(request):
-    city = []
-    data = []
+    city_min = []
+    city_max = []
+    data_min = []
+    data_max = []
+    city_min_temps = models.WeatherData.objects.values('city').annotate(Min('min_temp')).order_by('min_temp')
     city_max_temps = models.WeatherData.objects.values('city').annotate(Max('max_temp')).order_by('-max_temp')
+
     i = 0
+    for dic in city_min_temps:
+        city_min.append(dic['city'])
+        data_min.append(dic['min_temp__min'])
+        i = i+1
+        if i > 9 : break
+
+    j = 0
     for dic in city_max_temps:
-        city.append(dic['city'])
-        data.append(dic['max_temp__max'])
-        i = i + 1
-        if i > 9: break
-    return render(request, "max_ten_city.html", {"city": city, "data": data})
+        city_max.append(dic['city'])
+        data_max.append(dic['max_temp__max'])
+        j = j+1
+        if j > 9 : break
+    return render(request, "max_ten_city.html", {"city_max": city_max, "data_max": data_max,
+                                                 "city_min": city_min, "data_min": data_min})
 
 
 def chinaMap(request):
