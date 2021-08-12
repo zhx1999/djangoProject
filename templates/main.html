@@ -5,7 +5,18 @@
     <title>主页面</title>
     <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
     <script src="/static/layui/layui.js"></script>
+    <script src="/static/js/jquery.min.js"></script>
     <link rel="stylesheet" href="/static/layui/css/layui.css">
+    <script type="text/javascript">
+        var city;
+        function showLocation(data) {
+            city=data.content.address_detail.city;
+        }
+        $.getScript("http://api.map.baidu.com/location/ip?ak=g14ucq44xa2DmhNTkKK7gd0F7Q73Q3PE&callback=showLocation");
+        function SCity(){
+            window.open({% url 'city_temp_state' %}+"?city="+city, "_self")
+        }
+    </script>
 </head>
 <body>
 
@@ -15,17 +26,18 @@
             <li class="layui-nav-item layui-this">
                 <a href="{% url 'main' %}">全国气象展示</a>
             </li>
-
             <li class="layui-nav-item">
                 <a href="{% url 'search' %}">气象数据搜索展示</a>
             </li>
-
             <li class="layui-nav-item">
-                <a href="{% url 'searchstate' %}">地区城市统计</a>
+                <a href="{% url 'searchstate' %}">七日数据统计</a>
+            </li>
+            <li class="layui-nav-item">
+                <a href="{% url 'max_temp_state' %}">全国地区最高温度</a>
             </li>
 
             <li class="layui-nav-item">
-                <a href="{% url 'max_temp_state' %}">全国地区最高温度</a>
+                <a onclick="SCity()">城市天气预报</a>
             </li>
 
             <li class="layui-nav-item">
@@ -63,9 +75,9 @@
             table.render({
             elem: '#tableData' //注意：table标签的id属性值
             ,url:'/loadAllData/' //注意：Django后台数据请求的路由地址
-            ,limit: 5 //默认一页展示多少条数据
+            ,limit: 10 //默认一页展示多少条数据
               //设置可选项，每页显多少条数据
-            ,limits: [5, 10, 20]
+            ,limits: [10, 20, 50]
              // 每一列写入的数据，后端传来的参数填写进去
             ,cols: [[
                 {field: 'id', title: 'ID', sort: true, fixed: 'left'},

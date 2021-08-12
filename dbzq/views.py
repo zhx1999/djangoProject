@@ -1,46 +1,73 @@
-from django.shortcuts import render, redirect
-from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render,redirect
+from django.http import HttpResponse,JsonResponse
 from dbzq import models
 from django.core.paginator import Paginator
 from django.core import serializers
+from tools import checkCode
+from io import BytesIO
 import json
-
 
 # Create your views here.
 def login(request):
     if request.method == 'GET':
-        return render(request, 'login.html')
+        return render(request,'login.html')
     else:
         username = request.POST.get('name')
         password = request.POST.get('password')
-        # 条件查询
-        try:
-            user = models.RegistUser.objects.get(username=username)
-        except:
-            return render(request, 'login.html', {'msg': '登录失败，用户名不存在！'})
-        if user.password == password:
-            return render(request, 'main.html')
-        else:
-            return render(request, 'login.html', {'msg': '登录失败，密码错误！'})
+        vcode = request.POST.get('check_code')
+        vcodehide = request.session['check_code']
 
+        if vcode.lower() == vcodehide.lower():
+            # 条件查询
+            try:
+                user = models.RegistUser.objects.get(username=username)
+            except:
+                return render(request,'login.html',{'msg':'登录失败，用户名不存在！'})
+            if user.password == password:
+                request.session['username'] = username
+                return render(request,'main.html')
+            else:
+                return render(request,'login.html',{'msg':'登录失败，密码错误！'})
+        else:
+            return render(request, 'login.html', {'msg':'登陆失败，验证码错误！'})
 
 def regist(request):
     if request.method == 'GET':
-        return render(request, 'regist.html')
+        return render(request,'regist.html')
     else:
-        # 表单数据的捕获
+        #表单数据的捕获
         username = request.POST.get('name')
-        password = request.POST.get('password')
-        repeatpwd = request.POST.get('repeatpwd')
-        email = request.POST.get('email')
-        phone = request.POST.get('phone')
-        if password != repeatpwd:
-            return render(request, 'regist.html', {'msg': '注册失败！两次密码不一致......'})
+        vcode = request.POST.get('check_code')
+        vcodehide = request.session['check_code']
+        if vcode.lower() == vcodehide.lower():
+            try:
+                user = models.RegistUser.objects.get(username=username)
+                if user is not None:
+                    return render(request, 'regist.html', {'msg': '注册失败，用户名已存在！'})
+            except:
+                password = request.POST.get('password')
+                repeatpwd = request.POST.get('repeatpwd')
+                email = request.POST.get('email')
+                phone = request.POST.get('phone')
+                if password != repeatpwd:
+                    return render(request,'regist.html',{'msg':'注册失败！两次密码不一致......'})
+                else:
+                    user = models.RegistUser(username=username,password=password,email=email,phone=phone)
+                    user.save()
+                    return render(request,'registRight.html')
         else:
-            user = models.RegistUser(username=username, password=password, email=email, phone=phone)
-            user.save()
-            return render(request, 'registRight.html')
+            return render(request, 'regist.html', {'msg':'注册失败，验证码错误！'})
 
+def create_code_img(request):
+    f = BytesIO()  # 在内存中临时存放验证码图片
+
+    img, code = checkCode.create_validate_code() # 生成 图片,验证码
+
+    request.session['check_code'] = code  # 将验证码存在服务器的session中，用于校验
+    img.save(f, 'PNG')  # 生成的图片放置于开辟的内存中
+
+
+    return HttpResponse(f.getvalue())  # 将内存的数据读取出来，并以HttpResponse返回
 
 def mainView(request):
     return render(request, 'main.html')
@@ -63,10 +90,9 @@ def loadAllData(request):
     datas = {"code": 0, "msg": "", "count": page_count, "data": all_data_info}
     return JsonResponse(datas)
 
-
 def search(request):
     if request.method == 'GET':
-        return render(request, 'search.html')
+        return render(request,'search.html')
 
 
 def searchstate(request):
@@ -74,7 +100,7 @@ def searchstate(request):
         return render(request, 'searchstate.html')
 
 
-# xxxxxxxxxxxxxxxxx
+#xxxxxxxxxxxxxxxxx
 def loadSearchStateData(request):
     state_value = request.GET.get('query')
     state_items = models.WeatherData.objects.filter(state=state_value).values()
@@ -91,7 +117,6 @@ def loadSearchStateData(request):
     all_data_info = [x for x in data]
     datas = {"code": 0, "msg": "", "count": page_count, "data": all_data_info}
     return JsonResponse(datas)
-
 
 def loadSearchCityData(request):
     city_value = request.GET.get('query')
@@ -119,7 +144,8 @@ def loadSearchCityStateData(request):
             Q(state__icontains=search)
             | Q(city__icontains=search),
         )
-    state_items = models.WeatherData.objects.filter(*args).values('weather', 'city').annotate(count=Count('weather')).order_by('city')
+    state_items = models.WeatherData.objects.filter(*args).values('weather', 'city').annotate(
+        count=Count('weather')).order_by('city')
     page_count = len(state_items)
     # 前台传来的页数
     page_index = request.GET.get('page')
@@ -153,19 +179,21 @@ def loadSearchDtData(request):
     return JsonResponse(datas)
 
 
+
+
+
 def loadSelectData(request):
     state_datas = models.WeatherData.objects.all().values('state').distinct()
     city_datas = models.WeatherData.objects.all().values('city').distinct()
     dt_datas = models.WeatherData.objects.all().values('dt').distinct()
 
-    # 注意：QuerySet类型无法直接序列化，需要将其转成列表
+    #注意：QuerySet类型无法直接序列化，需要将其转成列表
     dic = {
-        'state_datas': list(state_datas),
-        'city_datas': list(city_datas),
-        'dt_datas': list(dt_datas),
+        'state_datas':list(state_datas),
+        'city_datas':list(city_datas),
+        'dt_datas':list(dt_datas),
     }
     return JsonResponse(dic)
-
 
 from django.db.models import Avg, Sum, Max, Min, Count, Q
 
@@ -179,36 +207,35 @@ def max_temp_state(request):
         data.append(dic['max_temp__max'])
     return render(request, "max_temp_state.html", {"name": name, "data": data})
 
-
 def chinaMap(request):
     city_max_temps = models.WeatherData.objects.values('city').annotate(Max('max_temp'))
     city_max_temps = list(city_max_temps)
-#     print(city_max_temps)
-    # 地图的数据必须要求字典的key为name和value
-    # 将原始orm请求到的数据中字典的key进行更换（
+    # print(city_max_temps)
+    #地图的数据必须要求字典的key为name和value
+    #将原始orm请求到的数据中字典的key进行更换（
     # 原始字典：{'city': '北京', 'max_temp__max': '33'}）
     path = "dbzq/city_to_pro.json"
-    with open(path,'r) as f:
+    with open(path, 'r') as f:
         city_to_pro = json.load(f)
     re = []
     re_pros = {}
-#     t_list_datas = []
+    t_list_datas = []
     for dic_item in city_max_temps:
         dic = {}
         tmp_re = {}
         dic['name'] = dic_item['city']
         dic['value'] = dic_item['max_temp__max']
-#         t_list_datas.append(dic)
         for pro in city_to_pro:
             if dic_item['city'] in city_to_pro[pro]:
                 if pro in re_pros:
-                    re_pros[pro] = str(max(int(re_pros[pro]),int(dic_item['max_temp__max'])))
+                    re_pros[pro] = str(max(int(re_pros[pro]), int(dic_item['max_temp__max'])))
                 else:
                     re_pros[pro] = dic_item['max_temp__max']
+
     for key in re_pros:
         dic_tmp = {}
         if '省' in key:
-            dic_tmp['name'] = key.replace('省','')
+            dic_tmp['name'] = key.replace('省', '')
         elif '市' in key:
             dic_tmp['name'] = key.replace('市', '')
         else:
@@ -216,3 +243,18 @@ def chinaMap(request):
         dic_tmp['value'] = re_pros[key]
         re.append(dic_tmp)
     return render(request, 'chinaMap.html', {'data': re})
+
+
+def city_temp_state(request):
+    city=request.GET.get("city")[0:-1];
+
+    min_temp = []
+    max_temp = []
+    data = []
+    result = models.WeatherData.objects.filter(city=city).values()
+    for dic in result:
+        min_temp.append(dic['min_temp'])
+        max_temp.append(dic['max_temp'])
+        data.append(dic['dt'])
+    # data[0] = today
+    return render(request, "city_temp_state.html",{"data": data, "city": city, "min_temp": min_temp, "max_temp": max_temp})

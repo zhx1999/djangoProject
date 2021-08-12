@@ -48,7 +48,7 @@
 
                 <div class="layui-input-block">
 
-                    <input type="text" name="name" required  lay-verify="required" placeholder="请输入标题" autocomplete="off" class="layui-input">
+                    <input type="text" name="name" required  lay-verify="required|username" placeholder="请输入用户名" autocomplete="off" class="layui-input">
 
                 </div>
 
@@ -60,7 +60,7 @@
 
                 <div class="layui-input-inline">
 
-                    <input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                    <input type="password" name="password" required lay-verify="required|pass" placeholder="请输入密码" autocomplete="off" class="layui-input">
 
                 </div>
 
@@ -84,7 +84,7 @@
 
                 <div class="layui-input-inline">
 
-                    <input type="text" name="email" required lay-verify="required" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
+                    <input type="text" name="email" required lay-verify="required|email" placeholder="请输入邮箱" autocomplete="off" class="layui-input">
 
                 </div>
 
@@ -96,9 +96,21 @@
 
                 <div class="layui-input-inline">
 
-                    <input type="text" name="phone" required lay-verify="required" placeholder="请输入手机号" autocomplete="off" class="layui-input">
+                    <input type="text" name="phone" required lay-verify="required|phone" placeholder="请输入手机号" autocomplete="off" class="layui-input">
 
                 </div>
+
+            </div>
+
+             <div class="layui-form-item">
+
+               <label class="layui-form-label">验证码：</label>
+
+                 <div class="layui-input-inline">
+
+                     <input type="text" required lay-verify="required" name="check_code" id="check_code" placeholder="请输入验证码" autocomplete="off" class="layui-input">
+                     <img id="check_code_img" src="/create_code_img/" onclick="refresh_check_code(this)">
+                 </div>
 
             </div>
 
@@ -114,7 +126,7 @@
 
                 <div style="text-align: center;">
 
-                    <input type="submit" class="layui-btn"  value="注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册"/>
+                    <input type="submit" class="layui-btn" lay-submit="" value="注&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;册"/>
 
                 </div>
 
@@ -129,5 +141,34 @@
             </p>
         </form>
     </div>
+
+    <script src="/static/layui/layui.js" charset="utf-8"></script>
+    <script>
+        layui.use(['form', 'layedit', 'laydate'], function(){
+
+            var form = layui.form;
+
+            form.verify({
+                username: [
+                  /^[\S]{4,12}$/
+                  ,'用户名必须4到12位，且不能出现空格'
+                ]
+                ,pass: [
+                  /^[\S]{6,12}$/
+                  ,'密码必须6到12位，且不能出现空格'
+                ]
+            });
+
+        });
+    </script>
+
+    <script type="text/javascript">
+
+       function refresh_check_code(ths) {
+          ths.src += '?';
+            {# src后面加问好会自动刷新验证码img的src#}
+         }
+
+    </script>
 </body>
 </html>
