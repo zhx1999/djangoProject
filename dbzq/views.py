@@ -323,4 +323,27 @@ def logout(request):
     # 2. 重定向到 登录界面
     return redirect('login')
 
+def modPwd(request):
+    if request.method == 'GET':
+        return render(request,'modPassword.html')
+    else:
+        #表单数据的捕获
+        username = request.POST.get('name')
+        try:
+            user = models.RegistUser.objects.get(username=username)
+            password = request.POST.get('password')
+            newpassword = request.POST.get('newpassword')
+            newrepeatpwd = request.POST.get('newrepeatpwd')
 
+            if(newpassword != newrepeatpwd):
+                return render(request, 'modPassword.html', {'msg':'两次密码不一致，请重新输入'})
+            elif user.password == password:
+                user = models.RegistUser(id=user.id, username=username, password=newpassword, email=user.email, phone=user.phone)
+                user.save()
+                return render(request, 'modPassword.html', {'msg':'修改成功'})
+            else:
+                return render(request, 'modPassword.html', {'msg': '原密码错误，请确认后重新输入'})
+
+
+        except:
+                return render(request, 'modPassword.html', {'msg':'用户不存在'})
