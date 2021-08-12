@@ -294,16 +294,17 @@ def password_reset(request):
     else:
         return render(request, 'password_reset.html')
 
-    def get_verify_code(request):
-        email = request.POST.get('email')
-        if email:
-            code = customize_random_str(4)
-            send_mail('密码重置',
-                      '您的验证码为: %s' % code, 'heyu2021best@163.com',
-                      [email], fail_silently=True)
-            cache.set(email, code, timeout=300)
-            return JsonResponse({'status': 'success', 'time_remain': 60})  # 'result': result})
-        return JsonResponse({'code': 400, 'msg': "邮箱错误"})
+
+def get_verify_code(request):
+    email = request.POST.get('email')
+    if email:
+        code = customize_random_str(4)
+        send_mail('密码重置',
+                  '您的验证码为: %s' % code, 'heyu2021best@163.com',
+                  [email], fail_silently=True)
+        cache.set(email, code, timeout=300)
+        return JsonResponse({'status': 'success', 'time_remain': 60})  # 'result': result})
+    return JsonResponse({'code': 400, 'msg': "邮箱错误"})
 
 
 def customize_random_str(i: int):
